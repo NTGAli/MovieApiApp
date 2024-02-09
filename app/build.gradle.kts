@@ -37,6 +37,7 @@ android {
     }
 
     buildFeatures {
+        viewBinding = true
         dataBinding = true
     }
 }
@@ -103,6 +104,13 @@ dependencies {
     testImplementation("androidx.paging:paging-common:$paging_version")
     // optional - Guava ListenableFuture support
     implementation("androidx.paging:paging-guava:$paging_version")
+
+    //Glide
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+
+    //chucker
+    debugImplementation("com.github.chuckerteam.chucker:library:4.0.0")
+
 
 }
 

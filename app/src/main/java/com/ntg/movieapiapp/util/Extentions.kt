@@ -1,6 +1,7 @@
 package com.ntg.movieapiapp.util
 
 import android.content.Context
+import android.content.res.Resources
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.widget.Toast
@@ -20,6 +21,13 @@ fun String?.orDefault() = this ?: ""
 fun Int?.orZero() = this ?: 0
 fun Boolean?.orFalse() = this ?: false
 fun Boolean?.orTrue() = this ?: true
+
+val Int.px: Int
+    get() = (this / Resources.getSystem().displayMetrics.density).toInt()
+
+val Int.dp: Int
+    get() = (this * Resources.getSystem().displayMetrics.density).toInt()
+
 
 fun timber(msg: String) {
     Timber.d(msg)

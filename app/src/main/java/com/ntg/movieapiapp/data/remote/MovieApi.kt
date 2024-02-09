@@ -7,8 +7,9 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface MovieApi {
+
     @GET("/3/movie/upcoming?language=en-US")
-    fun getUpcomingList(
+    suspend fun getUpcomingList(
         @Query("page") page: Int,
-    ):Response<ResponseBody<List<Movie?>?>>
+    ):Response<ResponseBody<List<Movie>?>>
 }

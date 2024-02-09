@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MovieApiApp</string>
+    <string name="discover">Discover</string>
 </resources>

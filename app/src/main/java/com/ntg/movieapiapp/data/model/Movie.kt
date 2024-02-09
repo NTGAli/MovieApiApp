@@ -5,7 +5,7 @@ data class Movie(
     val backdrop_path: String? = null,
     val title: String,
 //    val genre_ids: List<Int?>? = null,
-//    val id: Int?=  null,
+    val id: Int?=  null,
 //    val original_language: String,
 //    val original_title: String,
 //    val overview: String,
