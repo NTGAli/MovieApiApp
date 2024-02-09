@@ -1,7 +1,8 @@
-package com.ntg.movieapiapp
+package com.ntg.movieapiapp.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.ntg.movieapiapp.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
