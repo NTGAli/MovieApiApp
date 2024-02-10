@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:tools="http://schemas.android.com/tools">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/parent"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.MainActivity">
@@ -53,12 +52,73 @@
             app:layout_constraintRight_toRightOf="parent"/>
 
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?android:colorBackground"/>
+
         <ImageView
             android:id="@+id/viewAnimate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/bazaar_logo"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="parent"/>
+
+        <ProgressBar
+            android:id="@+id/loadDataProgress"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="32dp"
+            android:indeterminateTint="?attr/colorPrimary"
+            app:layout_constraintTop_toBottomOf="@id/viewAnimate"
+            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"/>
+
+        <LinearLayout
+            android:id="@+id/internetErrorParent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?android:colorBackground"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/sad_face"
+                android:tint="?attr/colorOnSecondaryContainer"
+                android:background="@drawable/gradient"
+                app:contentPadding="24dp"
+                app:shapeAppearanceOverlay="@style/CircleImage"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/connection_glitch"
+                android:layout_marginTop="16dp"
+                style="@style/TitleTextStyle"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/internet_error_msg"
+                android:gravity="center"
+                android:layout_marginTop="8dp"
+                style="@style/DescriptionTextStyle"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/retry"
+                android:layout_marginTop="24dp"
+                android:backgroundTint="?attr/colorSecondaryContainer"
+                android:textColor="?attr/colorOnSecondaryContainer"
+                />
+
+        </LinearLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -1,7 +1,13 @@
 package com.ntg.movieapiapp.ui
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.res.Configuration
+import android.content.res.Resources
+import android.graphics.Path
 import android.os.Bundle
+import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -10,8 +16,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
 import com.ntg.movieapiapp.databinding.ActivityMainBinding
+import com.ntg.movieapiapp.util.Constants.Animator.LOGO_ANIMATION_DURATION
+import com.ntg.movieapiapp.util.dp
 import com.ntg.movieapiapp.util.showSnack
+import com.ntg.movieapiapp.util.timber
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
@@ -26,7 +36,23 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        viewModel = ViewModelProvider(
+            this
+        )[MovieViewModel::class.java]
 
+        setupAdapter()
+
+        binding.parent.viewTreeObserver
+            .addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    startLogoAnimation()
+                    binding.parent.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                }
+            })
+
+    }
+
+    private fun setupAdapter() {
         adapter = MoviePagerAdapter {
             binding.root.showSnack(it.title)
         }
@@ -36,13 +62,7 @@ class MainActivity : AppCompatActivity() {
         binding.movieRV.adapter = adapter
         binding.movieRV.layoutManager = gridLayoutManager
 
-        viewModel = ViewModelProvider(
-            this
-        )[MovieViewModel::class.java]
 
-        viewModel.errorMessage.observe(this) {
-            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
-        }
 
         adapter.addLoadStateListener { loadState ->
 
@@ -77,19 +97,66 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
-//        viewModel.getMovieList().observe(this) {
-//            lifecycleScope.launch {
-//                adapter.submitData(lifecycle, it)
-//            }
-//        }
-
-        lifecycleScope.launchWhenStarted {
+        lifecycleScope.launch {
             viewModel.moviePagingFlow.collect {
                 adapter.submitData(lifecycle, it)
             }
         }
+    }
 
+    private fun startLogoAnimation(){
+        val displayMetrics = Resources.getSystem().displayMetrics
+        val screenWidth = displayMetrics.widthPixels.toFloat()
+
+
+        val appbarHeight = binding.appBar.height.toFloat()
+        val finalHeight = appbarHeight - 16.dp
+        val scale = finalHeight / binding.viewAnimate.height
+
+
+
+        val centerX: Float =
+            (binding.parent.width - binding.viewAnimate.width) / 2.0f
+        val centerY: Float =
+            (binding.parent.height - binding.viewAnimate.height) / 2.0f
+        binding.viewAnimate.x = centerX
+        binding.viewAnimate.y = centerY
+
+
+        val endX = screenWidth - binding.viewAnimate.width
+        val endY = -((binding.viewAnimate.height - (binding.viewAnimate.height * scale)) / 2f) + ((appbarHeight - (binding.viewAnimate.height * scale)) / 2)
+
+
+        val path = Path().apply {
+            moveTo(centerX, centerY)
+            quadTo(endX, endY, endX, endY)
+        }
+
+
+
+
+        val transactionAnimator =
+            ObjectAnimator.ofFloat(binding.viewAnimate, View.X, View.Y, path).apply {
+                duration = LOGO_ANIMATION_DURATION
+            }
+
+        val scaleAnimatorX =
+            ObjectAnimator.ofFloat(binding.viewAnimate, View.SCALE_X, scale).apply {
+                duration = LOGO_ANIMATION_DURATION
+            }
+
+        val scaleAnimatorY =
+            ObjectAnimator.ofFloat(binding.viewAnimate, View.SCALE_Y, scale).apply {
+                duration = LOGO_ANIMATION_DURATION
+            }
+
+        val animatorSet = AnimatorSet()
+        animatorSet.playTogether(
+            scaleAnimatorX,
+            scaleAnimatorY,
+            transactionAnimator
+        )
+        animatorSet.start()
     }
 
 

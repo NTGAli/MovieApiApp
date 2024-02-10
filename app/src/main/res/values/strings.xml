@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">MovieApiApp</string>
     <string name="discover">Discover</string>
+    <string name="connection_glitch">Connection glitch</string>
+    <string name="internet_error_msg">Seems like there\'s an internet\nconnection problem.</string>
+    <string name="retry">Retry</string>
 </resources>
