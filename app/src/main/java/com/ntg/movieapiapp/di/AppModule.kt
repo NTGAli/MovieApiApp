@@ -1,7 +1,14 @@
 package com.ntg.movieapiapp.di
 
 import android.content.Context
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.room.Room
 import com.chuckerteam.chucker.api.ChuckerInterceptor
+import com.ntg.movieapiapp.data.local.AppDB
+import com.ntg.movieapiapp.data.local.MovieEntity
+import com.ntg.movieapiapp.data.local.MovieRemoteMediator
 import com.ntg.movieapiapp.data.remote.AuthorizeInterceptor
 import com.ntg.movieapiapp.data.remote.LoggingInterceptor
 import com.ntg.movieapiapp.data.remote.MovieApi
@@ -19,7 +26,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class AppModule {
+object AppModule {
 
     @Provides
     @Singleton
@@ -47,5 +54,33 @@ class AppModule {
             .addInterceptor(AuthorizeInterceptor())
             .addInterceptor(ChuckerInterceptor(context))
             .build()
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideMovieDatabase(@ApplicationContext context: Context): AppDB {
+        return Room.databaseBuilder(
+            context,
+            AppDB::class.java,
+            "MoviesDB"
+        ).build()
+    }
+
+
+    @OptIn(ExperimentalPagingApi::class)
+    @Provides
+    @Singleton
+    fun provideMoviePager(movieDb: AppDB, movieApi: MovieApi): Pager<Int, MovieEntity> {
+        return Pager(
+            config = PagingConfig(pageSize = 20),
+            remoteMediator = MovieRemoteMediator(
+                movieDB = movieDb,
+                movieApi = movieApi
+            ),
+            pagingSourceFactory = {
+                movieDb.movieDao.pagingSource()
+            }
+        )
     }
 }

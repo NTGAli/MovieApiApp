@@ -12,7 +12,7 @@ import com.ntg.movieapiapp.data.model.Movie
 import com.ntg.movieapiapp.databinding.ItemMovieBinding
 
 
-class MoviePagerAdapter :
+class MoviePagerAdapter(private val onClick: (Movie) -> Unit) :
     PagingDataAdapter<Movie, MoviePagerAdapter.MovieViewHolder>(MovieComparator) {
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
@@ -24,29 +24,42 @@ class MoviePagerAdapter :
         return MovieViewHolder(binding)
     }
 
-    class MovieViewHolder(private val binding: ItemMovieBinding) :
+    inner class MovieViewHolder(private val binding: ItemMovieBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bindData(movie: Movie?) {
 
             // placeholder color
             val placeholderTypeValue = TypedValue()
-            binding.root.context.theme.resolveAttribute(com.google.android.material.R.attr.colorSurface, placeholderTypeValue, true)
+            binding.root.context.theme.resolveAttribute(
+                com.google.android.material.R.attr.colorSurface,
+                placeholderTypeValue,
+                true
+            )
             val placeholderColor = placeholderTypeValue.data
             val placeholderDrawable = ColorDrawable(placeholderColor)
 
             // error placeholder color
             val errorTypeValue = TypedValue()
-            binding.root.context.theme.resolveAttribute(com.google.android.material.R.attr.colorError, errorTypeValue, true)
+            binding.root.context.theme.resolveAttribute(
+                com.google.android.material.R.attr.colorError,
+                errorTypeValue,
+                true
+            )
             val errorPlaceholderColor = errorTypeValue.data
             val errorPlaceholderDrawable = ColorDrawable(errorPlaceholderColor)
 
             binding.title = movie?.title
             Glide.with(binding.root.context)
-                .load("http://image.tmdb.org/t/p/w500" + movie?.backdrop_path)
+                .load("https://image.tmdb.org/t/p/w500" + movie?.backdrop_path)
                 .placeholder(placeholderDrawable)
                 .error(errorPlaceholderDrawable)
                 .into(binding.cover)
+
+            binding.item.setOnClickListener {
+                if (movie != null)
+                    onClick.invoke(movie)
+            }
 
         }
 

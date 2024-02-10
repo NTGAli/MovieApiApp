@@ -1,12 +1,18 @@
 package com.ntg.movieapiapp.util
 
+import android.R
 import android.content.Context
 import android.content.res.Resources
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
+import com.google.android.material.snackbar.Snackbar
+import com.ntg.movieapiapp.data.local.MovieEntity
+import com.ntg.movieapiapp.data.model.Movie
 import com.ntg.movieapiapp.data.model.NetworkResult
 import kotlinx.coroutines.CoroutineDispatcher
 import retrofit2.HttpException
@@ -31,6 +37,29 @@ val Int.dp: Int
 
 fun timber(msg: String) {
     Timber.d(msg)
+}
+
+
+fun Movie.toEntity(page: Int): MovieEntity{
+    return MovieEntity(
+        id = 0,
+        backdropPath = backdrop_path,
+        title = title,
+        page = page
+    )
+}
+
+fun MovieEntity.toMovie(): Movie{
+    return Movie(
+        id = id,
+        backdrop_path = backdropPath,
+        title = title
+    )
+}
+
+fun View.showSnack(text: String){
+    Snackbar.make(this, text, Snackbar.LENGTH_LONG)
+        .show()
 }
 
 fun timber(title: String, msg: String) {
