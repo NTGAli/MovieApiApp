@@ -10,8 +10,10 @@ import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.ntg.movieapiapp.data.remote.MovieApi
 import com.ntg.movieapiapp.util.orZero
+import com.ntg.movieapiapp.util.timber
 import com.ntg.movieapiapp.util.toEntity
 import java.io.IOException
+import java.lang.Exception
 
 @OptIn(ExperimentalPagingApi::class)
 class MovieRemoteMediator(
@@ -42,19 +44,26 @@ class MovieRemoteMediator(
 
             val movies = movieApi.getUpcomingList(
                 page = loadKey,
-            ).body()
+            )
 
             movieDB.withTransaction {
                 if(loadType == LoadType.REFRESH) {
                     movieDB.movieDao.clear()
                 }
-                val movieEntities = movies?.results?.map { it.toEntity(movies.page ?: 1) }
+                val movieEntities = movies.body()?.results?.map { it.toEntity(movies.body()?.page ?: 1) }
                 movieDB.movieDao.upsertAll(movieEntities.orEmpty())
             }
 
-            MediatorResult.Success(
-                endOfPaginationReached = movies?.results.orEmpty().isEmpty()
-            )
+
+            if (movies.isSuccessful){
+                MediatorResult.Success(
+                    endOfPaginationReached = movies.body()?.results.orEmpty().isEmpty()
+                )
+            }else{
+                MediatorResult.Error(Exception())
+            }
+
+
         } catch(e: IOException) {
             MediatorResult.Error(e)
         } catch(e: HttpException) {

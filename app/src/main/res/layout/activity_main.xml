@@ -37,6 +37,8 @@
             android:id="@+id/movieRV"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:clipToPadding="false"
             android:paddingHorizontal="8dp"
             android:paddingBottom="64dp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
@@ -114,6 +116,7 @@
                 android:text="@string/internet_error_msg" />
 
             <Button
+                android:id="@+id/retry"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"

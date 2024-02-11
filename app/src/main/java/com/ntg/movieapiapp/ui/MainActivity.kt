@@ -17,7 +17,9 @@ import com.ntg.movieapiapp.util.Constants.Animator.LOGO_ANIMATION_DURATION
 import com.ntg.movieapiapp.util.Constants.ItemViews.LANDSCAPE_MODE_ITEM_SIZE
 import com.ntg.movieapiapp.util.Constants.ItemViews.PORTRAIT_MODE_ITEM_SIZE
 import com.ntg.movieapiapp.util.dp
+import com.ntg.movieapiapp.util.gone
 import com.ntg.movieapiapp.util.isInternetAvailable
+import com.ntg.movieapiapp.util.timber
 import com.ntg.movieapiapp.util.visible
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -44,9 +46,14 @@ class MainActivity : AppCompatActivity() {
         viewModel.isCashAvailable().observe(this) { cashSize ->
             if (cashSize == 0 && !isInternetAvailable(this)) {
                 binding.internetErrorParent.visible()
-            }else if (cashSize > 0 && isInternetAvailable(this)) {
+            } else if (cashSize > 0) {
+                binding.internetErrorParent.gone()
                 startLogoAnimation()
             }
+        }
+
+        binding.retry.setOnClickListener {
+            viewModel.dataAdapter.retry()
         }
     }
 
@@ -68,7 +75,7 @@ class MainActivity : AppCompatActivity() {
         gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
 
-                return if (position == viewModel.dataAdapter.itemCount  && footer.itemCount > 0) {
+                return if (position == viewModel.dataAdapter.itemCount && footer.itemCount > 0) {
                     spanCount
                 } else {
                     1
@@ -90,8 +97,12 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             viewModel.dataAdapter.loadStateFlow.collect { loadState ->
+                timber("LOOOADDSTATE ::::::::::::: $loadState")
+
+                val isListEmpty = loadState.refresh is LoadState.Error && viewModel.dataAdapter.itemCount == 0
+
                 when {
-                    loadState.prepend is LoadState.Error || loadState.prepend is LoadState.Loading-> {
+                    loadState.prepend is LoadState.Error || loadState.prepend is LoadState.Loading -> {
                         footer.loadState = loadState.prepend
                     }
 
@@ -102,9 +113,10 @@ class MainActivity : AppCompatActivity() {
                     loadState.refresh is LoadState.Error || loadState.refresh is LoadState.Loading -> {
                         footer.loadState = loadState.refresh
                     }
-
-
                 }
+
+                if (isListEmpty && isInternetAvailable(this@MainActivity)) binding.internetErrorParent.visible()
+
             }
         }
 
@@ -112,6 +124,8 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun startLogoAnimation() {
+        binding.loadDataProgress.gone()
+        binding.noDataView.gone()
 
         val displayMetrics = Resources.getSystem().displayMetrics
         val screenWidth = displayMetrics.widthPixels.toFloat()
@@ -122,10 +136,8 @@ class MainActivity : AppCompatActivity() {
         val scale = finalHeight / binding.viewAnimate.height
 
 
-        val centerX: Float =
-            (binding.parent.width - binding.viewAnimate.width) / 2.0f
-        val centerY: Float =
-            (binding.parent.height - binding.viewAnimate.height) / 2.0f
+        val centerX: Float = (binding.parent.width - binding.viewAnimate.width) / 2.0f
+        val centerY: Float = (binding.parent.height - binding.viewAnimate.height) / 2.0f
         binding.viewAnimate.x = centerX
         binding.viewAnimate.y = centerY
 
@@ -158,35 +170,36 @@ class MainActivity : AppCompatActivity() {
 
         val animatorSet = AnimatorSet()
         animatorSet.playTogether(
-            scaleAnimatorX,
-            scaleAnimatorY,
-            transactionAnimator
+            scaleAnimatorX, scaleAnimatorY, transactionAnimator
         )
-        animatorSet.start()
-
+        if (!animatorSet.isRunning){
+            animatorSet.start()
+        }
         viewModel.isAnimationStarted = true
+
 
     }
 
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        val spanCount = if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) LANDSCAPE_MODE_ITEM_SIZE else PORTRAIT_MODE_ITEM_SIZE
+        val spanCount =
+            if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) LANDSCAPE_MODE_ITEM_SIZE else PORTRAIT_MODE_ITEM_SIZE
         (binding.movieRV.layoutManager as GridLayoutManager).spanCount = spanCount
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        val firstVisibleItemPosition =
-            (binding.movieRV.layoutManager as GridLayoutManager).findFirstVisibleItemPosition()
-        outState.putInt("scroll_position", firstVisibleItemPosition)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        val scrollPosition = savedInstanceState.getInt("scroll_position", 0)
-        (binding.movieRV.layoutManager as GridLayoutManager).scrollToPosition(scrollPosition)
-    }
+//    override fun onSaveInstanceState(outState: Bundle) {
+//        super.onSaveInstanceState(outState)
+//        val firstVisibleItemPosition =
+//            (binding.movieRV.layoutManager as GridLayoutManager).findFirstVisibleItemPosition()
+//        outState.putInt("scroll_position", firstVisibleItemPosition)
+//    }
+//
+//    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+//        super.onRestoreInstanceState(savedInstanceState)
+//        val scrollPosition = savedInstanceState.getInt("scroll_position", 0)
+//        (binding.movieRV.layoutManager as GridLayoutManager).scrollToPosition(scrollPosition)
+//    }
 
 
 }
