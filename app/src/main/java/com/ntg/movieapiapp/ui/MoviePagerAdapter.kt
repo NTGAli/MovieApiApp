@@ -10,16 +10,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.ntg.movieapiapp.data.model.Movie
 import com.ntg.movieapiapp.databinding.ItemMovieBinding
+import com.ntg.movieapiapp.util.showSnack
 
-
-class MoviePagerAdapter(private val onClick: (Movie) -> Unit) :
-    PagingDataAdapter<Movie, MoviePagerAdapter.MovieViewHolder>(MovieComparator) {
-
-    override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
-        holder.bindData(getItem(position))
+class MoviePagerAdapter :
+    PagingDataAdapter<Movie, RecyclerView.ViewHolder>(MovieComparator) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        (holder as MovieViewHolder).bindData(getItem(position))
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val binding = ItemMovieBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return MovieViewHolder(binding)
     }
@@ -58,12 +57,15 @@ class MoviePagerAdapter(private val onClick: (Movie) -> Unit) :
 
             binding.item.setOnClickListener {
                 if (movie != null)
-                    onClick.invoke(movie)
+                    binding.root.showSnack(movie.title)
             }
 
         }
 
     }
+
+
+
 
     object MovieComparator : DiffUtil.ItemCallback<Movie>() {
         override fun areItemsTheSame(oldItem: Movie, newItem: Movie): Boolean {

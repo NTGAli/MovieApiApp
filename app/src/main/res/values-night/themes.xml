@@ -47,6 +47,18 @@
         <item name="android:textStyle">normal</item>
     </style>
 
+    <style name="ErrorTitleTextStyle" parent="Widget.AppCompat.TextView">
+        <item name="android:textColor">@color/md_theme_dark_onSurface</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="SnackTitleTextStyle" parent="Widget.AppCompat.TextView">
+        <item name="android:textColor">@color/md_theme_dark_onBackground</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
     <style name="CoverRadius">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">8dp</item>

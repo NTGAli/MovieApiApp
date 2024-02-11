@@ -11,4 +11,9 @@ object Constants {
         const val LOGO_ANIMATION_DURATION = 1000L
     }
 
+    object ItemViews{
+        const val PORTRAIT_MODE_ITEM_SIZE = 3
+        const val LANDSCAPE_MODE_ITEM_SIZE = 6
+    }
+
 }

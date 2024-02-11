@@ -1,19 +1,23 @@
 package com.ntg.movieapiapp.util
 
-import android.R
 import android.content.Context
 import android.content.res.Resources
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import com.google.android.material.snackbar.Snackbar
+import com.ntg.movieapiapp.R
 import com.ntg.movieapiapp.data.local.MovieEntity
 import com.ntg.movieapiapp.data.model.Movie
 import com.ntg.movieapiapp.data.model.NetworkResult
+import com.ntg.movieapiapp.data.model.SnackType
 import kotlinx.coroutines.CoroutineDispatcher
 import retrofit2.HttpException
 import retrofit2.Response
@@ -27,6 +31,14 @@ fun String?.orDefault() = this ?: ""
 fun Int?.orZero() = this ?: 0
 fun Boolean?.orFalse() = this ?: false
 fun Boolean?.orTrue() = this ?: true
+
+fun View.visible() {
+    this.visibility = View.VISIBLE
+}
+
+fun View.gone(){
+    this.visibility = View.GONE
+}
 
 val Int.px: Int
     get() = (this / Resources.getSystem().displayMetrics.density).toInt()
@@ -57,10 +69,23 @@ fun MovieEntity.toMovie(): Movie{
     )
 }
 
-fun View.showSnack(text: String){
-    Snackbar.make(this, text, Snackbar.LENGTH_LONG)
-        .show()
+fun View.showSnack(text: String, type: SnackType = SnackType.Default){
+
+    val snackBar = Snackbar.make(this, "", Snackbar.LENGTH_SHORT)
+    val inflater = LayoutInflater.from(context)
+    val customView = inflater.inflate(R.layout.snack_view, null)
+    val snackBarLayout = snackBar.view as Snackbar.SnackbarLayout
+    snackBarLayout.addView(customView, 0)
+    snackBarLayout.setPadding(0, 0, 0, 0)
+
+    snackBarLayout.findViewById<AppCompatTextView>(R.id.snackTitle).text = text
+
+    if (type == SnackType.Error){
+        snackBarLayout.findViewById<AppCompatImageView>(R.id.errorIcon).visible()
+    }
+    snackBar.show()
 }
+
 
 fun timber(title: String, msg: String) {
     Timber.d("$title ----------> $msg")

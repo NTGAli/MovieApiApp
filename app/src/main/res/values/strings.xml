@@ -4,4 +4,6 @@
     <string name="connection_glitch">Connection glitch</string>
     <string name="internet_error_msg">Seems like there\'s an internet\nconnection problem.</string>
     <string name="retry">Retry</string>
+    <string name="internet_error">Internet connection error</string>
+    <string name="try_again">Try Again</string>
 </resources>

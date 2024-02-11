@@ -1,5 +1,6 @@
 package com.ntg.movieapiapp.data.local
 
+import androidx.lifecycle.LiveData
 import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
@@ -16,6 +17,9 @@ interface MovieDao {
 
     @Query("DELETE FROM MovieEntity")
     fun clear()
+
+    @Query("SELECT COUNT(*) FROM MovieEntity")
+    fun size(): LiveData<Int>
 
 
 }

@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:tools="http://schemas.android.com/tools">
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/parent"
-        xmlns:android="http://schemas.android.com/apk/res/android"
+
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/parent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.MainActivity">
 
-
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appBar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="?attr/actionBarSize"
             app:layout_constraintTop_toTopOf="parent">
+
             <Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
@@ -23,12 +23,11 @@
 
                 <TextView
 
+                    android:id="@+id/toolbar_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/discover"
                     android:layout_gravity="center"
-                    android:id="@+id/toolbar_title" />
-
+                    android:text="@string/discover" />
 
 
             </Toolbar>
@@ -38,34 +37,39 @@
             android:id="@+id/movieRV"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/appBar"
-            android:paddingHorizontal="8dp"/>
+            android:paddingHorizontal="8dp"
+            android:paddingBottom="64dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:layout_constraintTop_toBottomOf="@id/appBar" />
+
 
         <ProgressBar
             android:id="@+id/loading"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="-54dp"
             android:indeterminateTint="?attr/colorPrimary"
-            app:layout_constraintTop_toBottomOf="@+id/movieRV"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"/>
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
 
 
         <View
+            android:id="@+id/noDataView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?android:colorBackground"/>
+            android:background="?android:colorBackground" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/viewAnimate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/bazaar_logo"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintRight_toRightOf="parent"/>
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ProgressBar
             android:id="@+id/loadDataProgress"
@@ -73,9 +77,9 @@
             android:layout_height="32dp"
             android:layout_marginTop="32dp"
             android:indeterminateTint="?attr/colorPrimary"
-            app:layout_constraintTop_toBottomOf="@id/viewAnimate"
+            app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@id/viewAnimate" />
 
         <LinearLayout
             android:id="@+id/internetErrorParent"
@@ -83,42 +87,40 @@
             android:layout_height="match_parent"
             android:background="?android:colorBackground"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="gone">
 
-            <com.google.android.material.imageview.ShapeableImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/sad_face"
-                android:tint="?attr/colorOnSecondaryContainer"
                 android:background="@drawable/gradient"
-                app:contentPadding="24dp"
-                app:shapeAppearanceOverlay="@style/CircleImage"/>
+                android:padding="24dp"
+                android:tint="?attr/colorOnSecondaryContainer"
+                app:srcCompat="@drawable/sad_face" />
 
             <TextView
+                style="@style/TitleTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/connection_glitch"
                 android:layout_marginTop="16dp"
-                style="@style/TitleTextStyle"/>
+                android:text="@string/connection_glitch" />
 
             <TextView
+                style="@style/DescriptionTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/internet_error_msg"
-                android:gravity="center"
                 android:layout_marginTop="8dp"
-                style="@style/DescriptionTextStyle"/>
+                android:gravity="center"
+                android:text="@string/internet_error_msg" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/retry"
                 android:layout_marginTop="24dp"
                 android:backgroundTint="?attr/colorSecondaryContainer"
-                android:textColor="?attr/colorOnSecondaryContainer"
-                />
+                android:text="@string/retry"
+                android:textColor="?attr/colorOnSecondaryContainer" />
 
         </LinearLayout>
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
