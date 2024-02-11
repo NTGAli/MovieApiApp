@@ -3,9 +3,11 @@ package com.ntg.movieapiapp.data.local
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.ntg.movieapiapp.data.model.RemoteKeys
 
-@Database(entities = [MovieEntity::class], version = 1)
+@Database(entities = [MovieEntity::class,RemoteKeys::class], version = 2)
 abstract class AppDB: RoomDatabase() {
 
-    abstract val movieDao: MovieDao
+    abstract fun movieDao(): MovieDao
+    abstract fun remoteKeysDao(): RemoteKeysDao
 }

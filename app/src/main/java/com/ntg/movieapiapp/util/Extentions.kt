@@ -52,12 +52,13 @@ fun timber(msg: String) {
 }
 
 
-fun Movie.toEntity(page: Int): MovieEntity{
+fun Movie.toEntity(): MovieEntity{
     return MovieEntity(
         id = 0,
         backdropPath = backdrop_path,
         title = title,
-        page = page
+        movieId = id.orDefault()
+//        page = page
     )
 }
 

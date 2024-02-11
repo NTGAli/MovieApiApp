@@ -8,7 +8,7 @@ import androidx.room.Room
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.ntg.movieapiapp.data.local.AppDB
 import com.ntg.movieapiapp.data.local.MovieEntity
-import com.ntg.movieapiapp.data.local.MovieRemoteMediator
+import com.ntg.movieapiapp.data.remote.MovieRemoteMediator
 import com.ntg.movieapiapp.data.remote.AuthorizeInterceptor
 import com.ntg.movieapiapp.data.remote.LoggingInterceptor
 import com.ntg.movieapiapp.data.remote.MovieApi
@@ -79,7 +79,7 @@ object AppModule {
                 movieApi = movieApi
             ),
             pagingSourceFactory = {
-                movieDb.movieDao.pagingSource()
+                movieDb.movieDao().pagingSource()
             }
         )
     }

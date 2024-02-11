@@ -16,7 +16,7 @@ interface MovieDao {
     fun pagingSource(): PagingSource<Int, MovieEntity>
 
     @Query("DELETE FROM MovieEntity")
-    fun clear()
+    suspend fun clear()
 
     @Query("SELECT COUNT(*) FROM MovieEntity")
     fun size(): LiveData<Int>

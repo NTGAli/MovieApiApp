@@ -36,7 +36,7 @@ class MovieViewModel @Inject constructor(
 
     fun isCashAvailable(): LiveData<Int> {
         viewModelScope.launch {
-            size = appDB.movieDao.size()
+            size = appDB.movieDao().size()
         }
         return size
     }

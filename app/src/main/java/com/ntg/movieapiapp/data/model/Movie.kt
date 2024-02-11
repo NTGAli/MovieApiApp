@@ -1,7 +1,7 @@
 package com.ntg.movieapiapp.data.model
 
 data class Movie(
-    val id: Int?=  null,
+    val id: Long?=  null,
     val backdrop_path: String? = null,
     val title: String,
 //    val adult: Boolean,
