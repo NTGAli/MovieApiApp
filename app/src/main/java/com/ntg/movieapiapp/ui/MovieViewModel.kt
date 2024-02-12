@@ -16,7 +16,6 @@ class MovieViewModel @Inject constructor(
     pager: Pager<Int, MovieEntity>,
 ) : ViewModel() {
     var isAnimationStarted = false
-    var focusChanged = true
 
     val moviePagingFlow = pager
         .flow

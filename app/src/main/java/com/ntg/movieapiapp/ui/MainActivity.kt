@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var movieViewModel: MovieViewModel
     private lateinit var binding: ActivityMainBinding
     private val animatorSet = AnimatorSet()
+    private var animationStated = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -160,8 +161,8 @@ class MainActivity : AppCompatActivity() {
 
         timber("SSSSSSSSSSSSSSSSSSSSSSSSSS :::: ${animatorSet.isStarted} ---- ${animatorSet.isRunning}")
 
-        if (!animatorSet.isRunning){
-
+        if (!animationStated){
+            animationStated = true
             binding.parent.viewTreeObserver
                 .addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
                     override fun onGlobalLayout() {
@@ -256,8 +257,5 @@ class MainActivity : AppCompatActivity() {
         (binding.movieRV.layoutManager as GridLayoutManager).scrollToPosition(scrollPosition)
     }
 
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        movieViewModel.focusChanged = hasFocus
-    }
 }
 
