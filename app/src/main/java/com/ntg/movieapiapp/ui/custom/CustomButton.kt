@@ -10,9 +10,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.core.content.withStyledAttributes
-import androidx.core.graphics.ColorUtils
 import com.ntg.movieapiapp.R
 import com.ntg.movieapiapp.ui.custom.ButtonSizes.PROGRESS_HEIGHT
 import com.ntg.movieapiapp.ui.custom.ButtonSizes.PROGRESS_WIDTH
@@ -26,7 +24,6 @@ object ButtonSizes{
     const val TEXT_VIEW_SIZE = 14f
     const val PROGRESS_WIDTH = 24f
     const val PROGRESS_HEIGHT = 24f
-//    const val TEXT_COLOR = mater
 }
 
 class CustomButton @JvmOverloads constructor(
@@ -39,19 +36,18 @@ class CustomButton @JvmOverloads constructor(
     private var myAttrs: AttributeSet? = null
 
     // attributes
-    var text: String? = null
+    private var text: String? = null
         set(value) {
             field = value
             textView.text = value
         }
 
-    var isLoadign: Boolean = false
+    private var isLoading: Boolean = false
         set(value) {
             field = value
             setBackgroundColorState()
         }
 
-    private var backgroundColorTouched: Int = R.color.md_theme_light_error
     private var viewContext: Context = context
 
     //views
@@ -180,11 +176,10 @@ class CustomButton @JvmOverloads constructor(
     }
 
     private fun setViews() {
-
         setParamsViews()
         addView(linearLayout)
         when {
-            isLoadign -> {
+            isLoading -> {
                 linearLayout.addView(textView)
                 linearLayout.visibility = GONE
                 addView(progressBar)
@@ -200,7 +195,7 @@ class CustomButton @JvmOverloads constructor(
     private fun getAttributes(attrs: AttributeSet?) {
         viewContext.withStyledAttributes(attrs, R.styleable.CustomButton) {
             text = getString(R.styleable.CustomButton_text)
-            isLoadign = getBoolean(R.styleable.CustomButton_isLoading, false)
+            isLoading = getBoolean(R.styleable.CustomButton_isLoading, false)
         }
     }
 

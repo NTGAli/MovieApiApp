@@ -49,11 +49,11 @@ class MoviePagerAdapter :
             val errorPlaceholderDrawable = ColorDrawable(errorPlaceholderColor)
 
             binding.title = movie?.title
-//            Glide.with(binding.root.context)
-//                .load("https://image.tmdb.org/t/p/w500" + movie?.backdrop_path)
-//                .placeholder(placeholderDrawable)
-//                .error(errorPlaceholderDrawable)
-//                .into(binding.cover)
+            Glide.with(binding.root.context)
+                .load("https://image.tmdb.org/t/p/w500" + movie?.backdropPath)
+                .placeholder(placeholderDrawable)
+                .error(errorPlaceholderDrawable)
+                .into(binding.cover)
 
             binding.item.setOnClickListener {
                 if (movie != null)

@@ -6,7 +6,6 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
@@ -55,7 +54,7 @@ fun timber(msg: String) {
 fun Movie.toEntity(): MovieEntity{
     return MovieEntity(
         id = 0,
-        backdropPath = backdrop_path,
+        backdropPath = backdropPath,
         title = title,
         movieId = id.orDefault()
 //        page = page
@@ -65,7 +64,7 @@ fun Movie.toEntity(): MovieEntity{
 fun MovieEntity.toMovie(): Movie{
     return Movie(
         id = id,
-        backdrop_path = backdropPath,
+        backdropPath = backdropPath,
         title = title
     )
 }

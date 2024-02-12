@@ -88,7 +88,7 @@ class MovieRemoteMediator(
     }
 
     private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, MovieEntity>): RemoteKeys? {
-        return state.pages.lastOrNull() { it.data.isNotEmpty() }?.data?.lastOrNull()
+        return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()
             ?.let { movie ->
                 movieDB.remoteKeysDao().remoteKeysMovieItemId(movie.movieId)
             }
