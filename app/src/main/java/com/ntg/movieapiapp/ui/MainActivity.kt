@@ -32,6 +32,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.util.logging.Handler
 
 
 @AndroidEntryPoint
@@ -94,9 +95,9 @@ class MainActivity : AppCompatActivity() {
             footer = footer
         )
 
-        movieRV.setOnScrollChangeListener { _, _, _, _, _ ->
-            divider.isVisible = movieRV.computeVerticalScrollOffset() > 38
-        }
+//        movieRV.setOnScrollChangeListener { _, _, _, _, _ ->
+//            divider.isVisible = movieRV.computeVerticalScrollOffset() > 38
+//        }
 
     }
 
@@ -126,7 +127,8 @@ class MainActivity : AppCompatActivity() {
                 }
 
 
-                if ((isInternetAvailable(this@MainActivity) && !isListEmpty && movieAdapter.itemCount > 0) || (!isInternetAvailable(
+                if ((isInternetAvailable(this@MainActivity) && !isListEmpty && movieAdapter.itemCount > 0) ||
+                    (!isInternetAvailable(
                         this@MainActivity
                     ) && !isListEmpty)
                 ) {
@@ -163,17 +165,12 @@ class MainActivity : AppCompatActivity() {
         binding.loadDataProgress.gone()
         binding.noDataView.gone()
 
-        timber("SSSSSSSSSSSSSSSSSSSSSSSSSS :::: ${animatorSet.isStarted} ---- ${animatorSet.isRunning}")
-
         if (!animationStated){
             animationStated = true
             binding.parent.viewTreeObserver
                 .addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
                     override fun onGlobalLayout() {
                         binding.parent.viewTreeObserver.removeOnGlobalLayoutListener(this)
-
-                        // Calculate the center X and Y positions
-
 
                         val displayMetrics = Resources.getSystem().displayMetrics
                         val screenWidth = displayMetrics.widthPixels.toFloat()
@@ -228,12 +225,7 @@ class MainActivity : AppCompatActivity() {
 
                         if (!animatorSet.isRunning) {
                             animatorSet.start()
-                            timber("HHHHHHHHHHHHHHHHHHH $appbarHeight --- ${binding.viewAnimate.height}")
                         }
-
-
-                        // Remove the listener to avoid unnecessary recalculations
-
                     }
                 })
         }
@@ -251,14 +243,16 @@ class MainActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         val firstVisibleItemPosition =
-            (binding.movieRV.layoutManager as GridLayoutManager).findFirstVisibleItemPosition()
+            binding.movieRV.computeVerticalScrollOffset()
         outState.putInt("scroll_position", firstVisibleItemPosition)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         val scrollPosition = savedInstanceState.getInt("scroll_position", 0)
-        (binding.movieRV.layoutManager as GridLayoutManager).scrollToPosition(scrollPosition)
+        binding.movieRV.post {
+            binding.movieRV.scrollToPosition(scrollPosition)
+        }
     }
 
 }

@@ -123,9 +123,6 @@ class CustomButton @JvmOverloads constructor(
         selectedShape.setStroke(2, borderColor.data)
 
 
-
-
-
         shape.setColor(backgroundColor.data)
         shape.setStroke(2, borderColor.data)
 
