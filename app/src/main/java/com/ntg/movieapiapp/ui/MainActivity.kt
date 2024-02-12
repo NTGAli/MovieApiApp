@@ -26,13 +26,11 @@ import com.ntg.movieapiapp.util.dp
 import com.ntg.movieapiapp.util.gone
 import com.ntg.movieapiapp.util.isInternetAvailable
 import com.ntg.movieapiapp.util.showSnack
-import com.ntg.movieapiapp.util.timber
 import com.ntg.movieapiapp.util.visible
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.util.logging.Handler
 
 
 @AndroidEntryPoint
@@ -95,9 +93,9 @@ class MainActivity : AppCompatActivity() {
             footer = footer
         )
 
-//        movieRV.setOnScrollChangeListener { _, _, _, _, _ ->
-//            divider.isVisible = movieRV.computeVerticalScrollOffset() > 38
-//        }
+        movieRV.setOnScrollChangeListener { _, _, _, _, _ ->
+            divider.isVisible = movieRV.computeVerticalScrollOffset() > 38
+        }
 
     }
 
