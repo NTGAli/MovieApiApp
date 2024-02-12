@@ -26,7 +26,6 @@ class MovieRemoteMediator(
         return InitializeAction.LAUNCH_INITIAL_REFRESH
     }
 
-
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override suspend fun load(
         loadType: LoadType,
@@ -57,8 +56,8 @@ class MovieRemoteMediator(
                 page = page,
             )
 
-            val repos = movies.body()?.results
-            val endOfPaginationReached = repos.orEmpty().isEmpty()
+            val mvieList = movies.body()?.results
+            val endOfPaginationReached = mvieList.orEmpty().isEmpty()
             movieDB.withTransaction {
                 if (loadType == LoadType.REFRESH) {
                     movieDB.remoteKeysDao().clearRemoteKeys()
@@ -69,11 +68,11 @@ class MovieRemoteMediator(
             val prevKey = movies.body()?.page?.minus(1)
             val nextKey = movies.body()?.page?.plus(1)
 
-            val keys = repos?.map {
+            val keys = mvieList?.map {
                 RemoteKeys(movieId = it.id.orDefault(), prevKey = prevKey, nextKey = nextKey)
             }
 
-            val entities = repos?.map {
+            val entities = mvieList?.map {
                 it.toEntity()
             }
 

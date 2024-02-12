@@ -20,10 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MovieViewModel @Inject constructor(
     pager: Pager<Int, MovieEntity>,
-    private val appDB: AppDB
 ) : ViewModel() {
-
-    private var size : LiveData<Int> = MutableLiveData()
     var isAnimationStarted = false
 
     val moviePagingFlow = pager
@@ -33,20 +30,4 @@ class MovieViewModel @Inject constructor(
         }
         .cachedIn(viewModelScope)
 
-
-    fun isCashAvailable(): LiveData<Int> {
-        viewModelScope.launch {
-            size = appDB.movieDao().size()
-        }
-        return size
-    }
-
-    var dataAdapter: MoviePagerAdapter = MoviePagerAdapter()
-
-
-    fun setAdapterData(data: PagingData<Movie>) {
-        viewModelScope.launch {
-            dataAdapter.submitData(data)
-        }
-    }
 }

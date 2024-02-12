@@ -8,10 +8,15 @@ import android.graphics.Path
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.recyclerview.widget.GridLayoutManager
+import com.ntg.movieapiapp.R
+import com.ntg.movieapiapp.data.model.Movie
+import com.ntg.movieapiapp.data.model.SnackType
 import com.ntg.movieapiapp.databinding.ActivityMainBinding
 import com.ntg.movieapiapp.util.Constants.Animator.LOGO_ANIMATION_DURATION
 import com.ntg.movieapiapp.util.Constants.ItemViews.LANDSCAPE_MODE_ITEM_SIZE
@@ -19,63 +24,50 @@ import com.ntg.movieapiapp.util.Constants.ItemViews.PORTRAIT_MODE_ITEM_SIZE
 import com.ntg.movieapiapp.util.dp
 import com.ntg.movieapiapp.util.gone
 import com.ntg.movieapiapp.util.isInternetAvailable
-import com.ntg.movieapiapp.util.timber
+import com.ntg.movieapiapp.util.showSnack
 import com.ntg.movieapiapp.util.visible
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: MovieViewModel
+    private lateinit var movieViewModel: MovieViewModel
     private lateinit var binding: ActivityMainBinding
-    private lateinit var footer: MovieLoadStateAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        viewModel = ViewModelProvider(
+
+        movieViewModel = ViewModelProvider(
             this
         )[MovieViewModel::class.java]
 
-        setupAdapter()
-
-        viewModel.isCashAvailable().observe(this) { cashSize ->
-            if (cashSize == 0 && !isInternetAvailable(this)) {
-                binding.internetErrorParent.visible()
-            } else if (cashSize > 0) {
-                binding.internetErrorParent.gone()
-                startLogoAnimation()
-            }
-        }
-
-        binding.retry.setOnClickListener {
-            viewModel.dataAdapter.retry()
-        }
+        binding.bindData(
+            pagingData = movieViewModel.moviePagingFlow,
+        )
     }
 
-    private fun setupAdapter() {
+    private fun ActivityMainBinding.bindData(
+        pagingData: Flow<PagingData<Movie>>,
+    ) {
+
+        val movieAdapter = MoviePagerAdapter()
+        val footer = MovieLoadStateAdapter { movieAdapter.retry() }
+
 
         val spanCount =
             if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) LANDSCAPE_MODE_ITEM_SIZE else PORTRAIT_MODE_ITEM_SIZE
-        val gridLayoutManager = GridLayoutManager(this, spanCount)
-        footer = MovieLoadStateAdapter(retry = {
-            if (isInternetAvailable(this)) {
-                viewModel.dataAdapter.retry()
-            }
-        })
-        binding.movieRV.apply {
-            layoutManager = gridLayoutManager
-            adapter = viewModel.dataAdapter.withLoadStateFooter(footer)
-        }
-
+        val gridLayoutManager = GridLayoutManager(this@MainActivity, spanCount)
         gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
 
-                return if (position == viewModel.dataAdapter.itemCount && footer.itemCount > 0) {
+                return if (position == movieAdapter.itemCount && footer.itemCount > 0) {
                     spanCount
                 } else {
                     1
@@ -83,23 +75,61 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        observeData()
+        movieRV.apply {
+            adapter = movieAdapter.withLoadStateFooter(
+                footer = footer
+            )
+            layoutManager = gridLayoutManager
+        }
+
+        retry.setOnClickListener { movieAdapter.retry() }
+
+        bindList(
+            movieAdapter = movieAdapter,
+            pagingData = pagingData,
+            footer = footer
+        )
+
     }
 
-
-    private fun observeData() {
+    private fun ActivityMainBinding.bindList(
+        movieAdapter: MoviePagerAdapter,
+        pagingData: Flow<PagingData<Movie>>,
+        footer: MovieLoadStateAdapter
+    ) {
 
         lifecycleScope.launch {
-            viewModel.moviePagingFlow.collect {
-                viewModel.setAdapterData(it)
-            }
+            pagingData.collectLatest(movieAdapter::submitData)
         }
 
         lifecycleScope.launch {
-            viewModel.dataAdapter.loadStateFlow.collect { loadState ->
-                timber("LOOOADDSTATE ::::::::::::: $loadState")
+            movieAdapter.loadStateFlow.collect { loadState ->
+                val isListEmpty =
+                    (loadState.refresh is LoadState.NotLoading || loadState.refresh is LoadState.Error) && movieAdapter.itemCount == 0
 
-                val isListEmpty = loadState.refresh is LoadState.Error && viewModel.dataAdapter.itemCount == 0
+                internetErrorParent.isVisible =
+                    loadState.mediator?.refresh is LoadState.Error && movieAdapter.itemCount == 0
+                val errorState = loadState.source.append as? LoadState.Error
+                    ?: loadState.source.prepend as? LoadState.Error
+                    ?: loadState.append as? LoadState.Error
+                    ?: loadState.prepend as? LoadState.Error
+                errorState?.let {
+                    root.showSnack(getString(R.string.internet_error), SnackType.Error)
+                }
+
+
+                if ((isInternetAvailable(this@MainActivity) && !isListEmpty && movieAdapter.itemCount > 0) || (!isInternetAvailable(
+                        this@MainActivity
+                    ) && !isListEmpty)
+                ) {
+                    startLogoAnimation()
+                } else if (!isInternetAvailable(this@MainActivity) && isListEmpty) {
+                    internetErrorParent.visible()
+                } else if (isInternetAvailable(this@MainActivity) && isListEmpty) {
+                    binding.internetErrorParent.gone()
+                    binding.noDataView.visible()
+                    binding.loadDataProgress.visible()
+                }
 
                 when {
                     loadState.prepend is LoadState.Error || loadState.prepend is LoadState.Loading -> {
@@ -114,16 +144,14 @@ class MainActivity : AppCompatActivity() {
                         footer.loadState = loadState.refresh
                     }
                 }
-
-                if (isListEmpty && isInternetAvailable(this@MainActivity)) binding.internetErrorParent.visible()
-
             }
         }
 
+
     }
 
-
     private fun startLogoAnimation() {
+        binding.internetErrorParent.gone()
         binding.loadDataProgress.gone()
         binding.noDataView.gone()
 
@@ -155,31 +183,30 @@ class MainActivity : AppCompatActivity() {
 
         val transactionAnimator =
             ObjectAnimator.ofFloat(binding.viewAnimate, View.X, View.Y, path).apply {
-                duration = if (viewModel.isAnimationStarted) 0 else LOGO_ANIMATION_DURATION
+                duration = if (movieViewModel.isAnimationStarted) 0 else LOGO_ANIMATION_DURATION
             }
 
         val scaleAnimatorX =
             ObjectAnimator.ofFloat(binding.viewAnimate, View.SCALE_X, scale).apply {
-                duration = if (viewModel.isAnimationStarted) 0 else LOGO_ANIMATION_DURATION
+                duration = if (movieViewModel.isAnimationStarted) 0 else LOGO_ANIMATION_DURATION
             }
 
         val scaleAnimatorY =
             ObjectAnimator.ofFloat(binding.viewAnimate, View.SCALE_Y, scale).apply {
-                duration = if (viewModel.isAnimationStarted) 0 else LOGO_ANIMATION_DURATION
+                duration = if (movieViewModel.isAnimationStarted) 0 else LOGO_ANIMATION_DURATION
             }
 
         val animatorSet = AnimatorSet()
         animatorSet.playTogether(
             scaleAnimatorX, scaleAnimatorY, transactionAnimator
         )
-        if (!animatorSet.isRunning){
+        if (!animatorSet.isRunning) {
             animatorSet.start()
         }
-        viewModel.isAnimationStarted = true
+        movieViewModel.isAnimationStarted = true
 
 
     }
-
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -188,19 +215,18 @@ class MainActivity : AppCompatActivity() {
         (binding.movieRV.layoutManager as GridLayoutManager).spanCount = spanCount
     }
 
-//    override fun onSaveInstanceState(outState: Bundle) {
-//        super.onSaveInstanceState(outState)
-//        val firstVisibleItemPosition =
-//            (binding.movieRV.layoutManager as GridLayoutManager).findFirstVisibleItemPosition()
-//        outState.putInt("scroll_position", firstVisibleItemPosition)
-//    }
-//
-//    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-//        super.onRestoreInstanceState(savedInstanceState)
-//        val scrollPosition = savedInstanceState.getInt("scroll_position", 0)
-//        (binding.movieRV.layoutManager as GridLayoutManager).scrollToPosition(scrollPosition)
-//    }
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        val firstVisibleItemPosition =
+            (binding.movieRV.layoutManager as GridLayoutManager).findFirstVisibleItemPosition()
+        outState.putInt("scroll_position", firstVisibleItemPosition)
+    }
 
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        val scrollPosition = savedInstanceState.getInt("scroll_position", 0)
+        (binding.movieRV.layoutManager as GridLayoutManager).scrollToPosition(scrollPosition)
+    }
 
 }
 
