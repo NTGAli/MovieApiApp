@@ -52,12 +52,12 @@ class MainActivity : AppCompatActivity() {
             this
         )[MovieViewModel::class.java]
 
-        binding.bindData(
+        binding.bindUI(
             pagingData = movieViewModel.moviePagingFlow,
         )
     }
 
-    private fun ActivityMainBinding.bindData(
+    private fun ActivityMainBinding.bindUI(
         pagingData: Flow<PagingData<Movie>>,
     ) {
 
@@ -93,6 +93,10 @@ class MainActivity : AppCompatActivity() {
             pagingData = pagingData,
             footer = footer
         )
+
+        movieRV.setOnScrollChangeListener { _, _, _, _, _ ->
+            divider.isVisible = movieRV.computeVerticalScrollOffset() > 38
+        }
 
     }
 

@@ -19,7 +19,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:gravity="center">
+                android:gravity="center"
+                android:background="?android:colorBackground">
 
                 <TextView
 
@@ -33,6 +34,14 @@
 
             </Toolbar>
         </com.google.android.material.appbar.AppBarLayout>
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:visibility="gone"
+            android:background="?attr/colorOnTertiary"
+            app:layout_constraintTop_toBottomOf="@id/appBar"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/movieRV"
