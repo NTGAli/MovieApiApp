@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/drawable/ic_background_with_icon.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Background color with padding -->
+    <item
+        android:id="@android:id/background">
+        <shape android:shape="rectangle">
+            <solid android:color="?attr/colorSurface" />
+        </shape>
+    </item>
+
+    <item
+        android:id="@android:id/icon"
+        android:left="32dp"
+        android:top="32dp"
+        android:right="32dp"
+        android:bottom="32dp"
+        android:drawable="@drawable/image">
+
+
+    </item>
+
+</layer-list>

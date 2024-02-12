@@ -8,6 +8,7 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.ntg.movieapiapp.R
 import com.ntg.movieapiapp.data.model.Movie
 import com.ntg.movieapiapp.databinding.ItemMovieBinding
 import com.ntg.movieapiapp.util.showSnack
@@ -28,31 +29,11 @@ class MoviePagerAdapter :
 
         fun bindData(movie: Movie?) {
 
-            // placeholder color
-            val placeholderTypeValue = TypedValue()
-            binding.root.context.theme.resolveAttribute(
-                com.google.android.material.R.attr.colorSurface,
-                placeholderTypeValue,
-                true
-            )
-            val placeholderColor = placeholderTypeValue.data
-            val placeholderDrawable = ColorDrawable(placeholderColor)
-
-            // error placeholder color
-            val errorTypeValue = TypedValue()
-            binding.root.context.theme.resolveAttribute(
-                com.google.android.material.R.attr.colorError,
-                errorTypeValue,
-                true
-            )
-            val errorPlaceholderColor = errorTypeValue.data
-            val errorPlaceholderDrawable = ColorDrawable(errorPlaceholderColor)
-
             binding.title = movie?.title
             Glide.with(binding.root.context)
                 .load("https://image.tmdb.org/t/p/w500" + movie?.backdropPath)
-                .placeholder(placeholderDrawable)
-                .error(errorPlaceholderDrawable)
+                .placeholder(R.drawable.placholder)
+                .error(R.drawable.error_item)
                 .into(binding.cover)
 
             binding.item.setOnClickListener {
