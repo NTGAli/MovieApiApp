@@ -5,7 +5,6 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.room.Room
-import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.ntg.movieapiapp.data.local.AppDB
 import com.ntg.movieapiapp.data.local.MovieEntity
 import com.ntg.movieapiapp.data.remote.MovieRemoteMediator
@@ -46,13 +45,12 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideOKHttp(@ApplicationContext context:Context): OkHttpClient{
+    fun provideOKHttp(): OkHttpClient{
         return OkHttpClient.Builder()
             .readTimeout(15,TimeUnit.SECONDS)
             .connectTimeout(15, TimeUnit.SECONDS)
             .addInterceptor(LoggingInterceptor().httpLoggingInterceptor())
             .addInterceptor(AuthorizeInterceptor())
-            .addInterceptor(ChuckerInterceptor(context))
             .build()
     }
 
