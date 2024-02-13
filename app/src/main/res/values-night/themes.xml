@@ -59,6 +59,12 @@
         <item name="android:textStyle">normal</item>
     </style>
 
+    <style name="TitleMovieStyle" parent="Widget.AppCompat.TextView">
+        <item name="android:textColor">@color/md_theme_dark_onBackground</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="AppbarTitleTextStyle" parent="Widget.AppCompat.TextView">
         <item name="android:textColor">@color/md_theme_light_error</item>
         <item name="android:textSize">20sp</item>
