@@ -9,7 +9,7 @@ object Constants {
     }
 
     object Animator{
-        const val LOGO_ANIMATION_DURATION = 1000L
+        const val LOGO_ANIMATION_DURATION = 800L
     }
 
     object ItemViews{
